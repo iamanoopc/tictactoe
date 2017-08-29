@@ -1,0 +1,519 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Tic Tac Toe Game</title>
+    <link href="https://fonts.googleapis.com/css?family=Patua+One" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+
+<script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+<script src="https://unpkg.com/react@15/dist/react-with-addons.js"></script>  
+<script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+
+<!-- <script src="https://fb.me/react-15.0.1.js"></script> -->
+
+<!-- <script src="https://fb.me/react-dom-15.0.1.js"></script>     -->
+  
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+
+<script type="text/babel">
+
+
+const ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
+const CellXO = (props) => (
+  props.entry === "X" ? <div className="X">{props.entry}</div>:
+  props.entry === "O" ? <div className="O">{props.entry}</div>:
+  props.entry === "" ? <div>{props.entry}</div> :
+  null  
+);
+class App extends React.Component{
+    constructor(){
+    super();
+    this.state={      
+      gameStarted:false,
+      playerSelect:true,
+      signSelect:false,
+      singlePlayer:false,
+      twoPlayer:false,
+      AIplayer:false,
+      playerOneScore: 0,
+      playerTwoScore: 0,
+      playerOne: "",
+      playerTwo: "",
+      currentTurn:"",
+      winnerMessage:"",
+      gameOver: false,
+      AIPlayerTurn: false,
+      playerMoves: [],
+      AIMoves:[],
+      moveCount: 0,
+      winningCombos: [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ],
+      board: [
+        "","","",
+        "","","",
+        "","",""
+      ]
+    }
+  }
+  reset(){
+    this.setState({
+      board: ["","","","","","","","",""],
+      winnerMessage: "",
+      gameOver:false,
+      gameStarted:false,
+      playerSelect:true,
+      signSelect:false,
+      singlePlayer:false,
+      twoPlayer:false,
+      playerOne:"",
+      playerTwo:"",
+      currentTurn: "",
+      playerOneScore: 0,
+      playerTwoScore: 0,
+      AIPlayerTurn:false,
+      playerMoves: [],
+      AIMoves:[],
+      moveCount: 0
+    })
+  }
+  newgame(){
+    const{ twoPlayer, singlePlayer, currentTurn, playerMoves, AIMoves } = this.state;
+    if(twoPlayer){
+      this.setState({
+        board: ["","","","","","","","",""],
+        winnerMessage: "",
+        gameOver:false,
+        
+        moveCount:0
+      })
+    }
+    if(singlePlayer){
+      this.setState({
+        board: ["","","","","","","","",""],
+        winnerMessage: "",
+        gameOver:false,
+        AIPlayerTurn: true ? false:true,
+        moveCount:0,
+        playerMoves:[],
+        AIMoves:[],
+      })
+    }
+  }
+  singlePlayer(){
+     this.setState({
+      singlePlayer:true,
+      playerSelect:false,
+      signSelect:true
+    })
+  }
+  twoPlayer(){
+     this.setState({
+      twoPlayer:true,
+      playerSelect:false,
+      signSelect:true,
+    })
+  }
+  singlePlayerX(){
+     this.setState({
+      currentTurn:"X",
+      playerOne:"X",
+      playerTwo:"O",
+      AIplayer:true,
+      gameStarted:true,
+      signSelect: false,
+    })
+  }
+  singlePlayerO(){
+     this.setState({
+      currentTurn:"O",
+      playerOne:"O",
+      playerTwo:"X",
+      AIplayer:true,
+      gameStarted:true,
+      signSelect: false
+    })
+  }
+  chooseX(){
+     this.setState({
+      currentTurn:"X",
+      playerOne:"X",
+      playerTwo:"O",
+      gameStarted:true,
+      signSelect: false
+    })
+  }
+  chooseO(){
+     this.setState({
+      currentTurn:"O",
+      playerOne:"O",
+      playerTwo:"X",
+      gameStarted:true,
+      signSelect: false
+    })
+  }
+  humanMarkTheBoard(position){
+    const{currentTurn, board, playerMoves, moveCount} = this.state;
+    board[position] = currentTurn;
+    
+    this.setState({
+      playerMoves: playerMoves.concat(position),
+      moveCount: moveCount+1
+    })
+  }
+  AIMarkTheBoard(move){
+    const{playerTwo, board, AIMoves} = this.state;
+    if(board[move]===""){
+          board[move] =  playerTwo ;
+    }
+    this.setState({
+      AIMoves: AIMoves.concat(move)
+    })
+  }
+  availableIndices(){
+    const{ moveCount, board} = this.state;
+    return board.reduce((arr, el, i)=> { if(el==="") arr.push(i); return arr}, []);
+    
+  }
+  AIMove(value){
+    const{ moveCount, board} = this.state;
+    var pickedMove;
+    {/*Pick the center piece first if available*/}
+    if(this.availableIndices().indexOf(4) > -1){
+      pickedMove = 4;
+    }
+    else{
+      if(this.attackMove(value)){
+        pickedMove = this.attackMove();
+        
+      }
+      else if(this.defenseMove(value)){
+        pickedMove = this.defenseMove(value);
+        
+      }
+      else{
+        pickedMove = this.availableIndices()[Math.floor(Math.random()*this.availableIndices().length)];
+        
+      }
+    }
+
+    this.AIMarkTheBoard(pickedMove);
+    this.setState({
+
+         moveCount: moveCount+1
+    })
+  }
+  attackMove(value){
+    const{ moveCount, winningCombos, playerMoves, AIMoves} = this.state;
+
+    Array.prototype.diff = function(a) {
+        return this.filter(function(i) {return a.indexOf(i) < 0;});
+    };
+    var playerMovesList = playerMoves.concat(value)
+    let winningMoves, impossibleWinMoves, possibleWinMoves;
+    let move;
+    if(AIMoves.length >1){
+
+      winningMoves =  winningCombos.filter(v => v.filter(c => {
+                                return AIMoves.indexOf(c) > -1;
+                              }).length == 2);
+      impossibleWinMoves =  winningMoves.filter(a => a.filter(b => {
+                                return playerMovesList.indexOf(b) > -1;
+                              }).length == 1);
+      possibleWinMoves = winningMoves.diff(impossibleWinMoves);
+
+
+      if(possibleWinMoves.length ===1){
+        move = possibleWinMoves[0].filter(v => {
+                                  return AIMoves.indexOf(v) === -1;
+                                });
+      }
+      else if(possibleWinMoves.length >=1){
+        
+        move = possibleWinMoves[Math.floor(Math.random()*possibleWinMoves.length)].filter(v => {
+                                  return AIMoves.indexOf(v) === -1;
+                                });
+
+      }
+      else if(possibleWinMoves.length===0){
+        move = false;
+      }
+    }
+    
+    if(move){
+      return move
+    }else{
+        return false
+    }
+
+
+  }
+  defenseMove(value){
+    const{ moveCount, winningCombos, playerMoves, AIMoves} = this.state;
+
+    Array.prototype.diff = function(a) {
+        return this.filter(function(i) {return a.indexOf(i) < 0;});
+    };
+
+    let winningMoves, impossibleWinMoves, possibleWinMoves;
+    var playerMovesList = playerMoves.concat(value)
+    let move;
+    winningMoves =  winningCombos.filter(v => v.filter(c => {
+                              return playerMovesList.indexOf(c) > -1;
+                            }).length == 2);
+    impossibleWinMoves =  winningMoves.filter(a => a.filter(b => {
+                              return AIMoves.indexOf(b) > -1;
+                            }).length == 1);
+    possibleWinMoves = winningMoves.diff(impossibleWinMoves);
+
+    if(possibleWinMoves.length ===1){
+      move = possibleWinMoves[0].filter(v => {
+                                return playerMovesList.indexOf(v) === -1;
+                              });
+    }
+    else if(possibleWinMoves.length >=1){
+      
+      move = possibleWinMoves[Math.floor(Math.random()*possibleWinMoves.length)].filter(v => {
+                                return playerMovesList.indexOf(v) === -1;
+                              });
+
+    }
+    else if(possibleWinMoves.length===0){
+      move = false;
+      return move;
+    }
+    
+    if(move){
+      return move;
+    }
+    else{
+      return false;
+    }
+  }
+  checkWinTie(){
+    const {playerOne, playerTwo, playerOneScore, playerTwoScore, gameOver, board, winningCombos} = this.state;    
+    let winningCombo = []; 
+   
+    winningCombos.map((row)=>{
+      const [a, b, c] = row;
+      if(board[a] !== "" && board[a]===board[b] && board[a]===board[c]){
+        winningCombo.push(row);
+        return true
+      }
+    })
+    let WinningSymbol = board[_.flatten(winningCombo)[0]];
+    if(WinningSymbol===playerOne){
+      this.setState({
+         winnerMessage: "The winner is PlayerOne",
+         playerOneScore: playerOneScore +1,
+         gameOver: true,
+        })
+      return true;
+    }
+    else if (WinningSymbol==playerTwo) {
+        this.setState({
+         winnerMessage: "The winner is PlayerTwo",
+         playerTwoScore: playerTwoScore +1,
+         gameOver: true,
+        })
+      return true;
+    }
+    else if(this.availableIndices().length===0){
+      this.setState({
+       winnerMessage: "Nobody Wins! Game Result is Tie",
+       gameOver: true
+      })
+      return;
+    }
+    else {
+      return false;
+    }
+    
+  }
+  
+  handleClick(val){
+    const {board, currentTurn, playerOne, playerTwo,  winnerMessage, gameOver, gameStarted, playerOneScore, playerTwoScore, twoPlayer, singlePlayer,  winningCombos, AIPlayerTurn, moveCount,playerMoves, AIMoves} = this.state;
+/*Two PLAYER GAME*/
+    
+    if(!gameOver && gameStarted && twoPlayer){
+      this.humanMarkTheBoard(val);
+      this.checkWinTie();
+
+      this.setState({
+       currentTurn: currentTurn === playerOne ? playerTwo : playerOne
+      })
+    }
+
+
+/*SINGLE PLAYER GAME*/
+     if(!gameOver && gameStarted && singlePlayer){
+      
+       
+      if(this.availableIndices().indexOf(val)===-1){
+        return;
+      }
+      else{
+        this.humanMarkTheBoard(val);
+        this.checkWinTie();
+        
+        if(!this.checkWinTie()){
+          this.AIMove(val);
+          this.checkWinTie();
+          this.setState({
+            currentTurn: playerOne
+          });
+        }
+        
+        
+         
+      }
+    }
+  }
+
+  render(){
+    const {board, currentTurn, winnerMessage, gameOver, gameStarted, playerSelect, signSelect, singlePlayer, twoPlayer, playerOneScore, playerTwoScore, animation} = this.state;
+    return (
+      <div>
+        {/*GAME SCORE*/}
+        {/*gameStarted &&
+          <div id="score-board">
+            <div id="playerone-score">
+              <h3>Player One</h3>
+              {playerOneScore}
+            </div>
+            <div id="playertwo-score">
+              <h3>Player Two</h3>
+              {playerTwoScore}
+            </div>
+          </div>
+        */}
+        {/*PLAY BOARD*/}
+      <div id="board">
+
+        {
+          this.state.board.map((item, index)=>{
+
+            return (
+              <ReactCSSTransitionGroup
+                transitionName= "fade"
+                transitionEnterTimeOut={700}
+                transitionLeaveTimeOut={700}
+                transitionAppear={true}
+                transitionAppearTimeOut={700}
+              >
+                
+              {<div
+                onClick={this.handleClick.bind(this, index)}
+                className={
+                  index==1 ? "btn no-border-top":
+                  index==7 ? "btn no-border-bottom":
+                  index==3 ? "btn no-border-left":
+                  index==5 ? "btn no-border-right":
+                  index==0 ? "btn no-border-top no-border-left gray-btn":
+                  index==2 ? "btn no-border-top no-border-right gray-btn":
+                  index==6 ? "btn no-border-bottom no-border-left gray-btn":
+                  index==8 ? "btn no-border-bottom no-border-right gray-btn":
+                  index==4 ? "btn gray-btn":
+
+                  "btn"
+                }
+               >
+                <CellXO entry={item} />
+              </div>}
+             </ReactCSSTransitionGroup>
+            )
+          })
+        }
+        </div>
+        {/*START GAME WINDOW*/}
+        <ReactCSSTransitionGroup
+          transitionName= "fade"
+          transitionEnterTimeOut={700}
+          transitionLeaveTimeOut={700}
+          transitionAppear={true}
+          transitionAppearTimeOut={700}
+          >
+        { !gameStarted &&
+          <div id="winnerMessage" className="animate">
+             
+            <h2>TIC TAC TOE</h2>
+            <br/>
+            {/*PLAYER SELECT OPTION*/}
+            { playerSelect &&
+              <div>
+                
+                <button className="player-select blue" onClick={this.singlePlayer.bind(this)}>NEW GAME</button>
+                <button className="player-select red" onClick={this.twoPlayer.bind(this)}>MULTIPLAYER</button>
+              </div> }
+            {/*SYMBOL SELECT WINDOW*/}
+            {signSelect && singlePlayer && <div>
+              <h4>Player One Choose</h4>
+              <button className="blue" onClick={this.singlePlayerX.bind(this)}>X</button>
+              <button className="red" onClick={this.singlePlayerO.bind(this)}>O</button>
+            </div>}
+            {signSelect && twoPlayer && <div>
+              <h4>Player One Choose</h4>
+              <button className="blue" onClick={this.chooseX.bind(this)}>X</button>
+              <button className="red" onClick={this.chooseO.bind(this)}>O</button>
+            </div>}
+          </div>
+        }
+        </ReactCSSTransitionGroup>
+        {/*GAME OVER WINDOW*/}
+        <ReactCSSTransitionGroup
+          transitionName= "fade"
+          transitionEnterTimeOut={700}
+          transitionLeaveTimeOut={700}
+          >
+        { gameOver &&
+          <div id="winnerMessage">
+            <h2>Game over</h2>
+                
+            <h3>{winnerMessage}</h3>
+            
+              <div id="score-board">
+                <div id="playerone-score">
+                  <h3>Player One</h3>
+                  <p>{playerOneScore}</p>
+                </div>
+                <div id="playertwo-score">
+                  <h3>Player Two</h3>
+                  <p>{playerTwoScore}</p>
+                </div>
+              </div>
+            <h3>{currentTurn + "\'s Turn"} </h3>  
+            <button className="start-btn" onClick={this.newgame.bind(this)}>START</button>
+          </div>
+        }
+          </ReactCSSTransitionGroup>
+        {gameStarted && !gameOver &&
+        <button className="reset-btn" onClick={this.reset.bind(this)}>END GAME</button>
+        }
+        {/*/<pre style={{position:"absolute", top:"0", right:"0", width:"200px"}}>{JSON.stringify(this.state, null, 2)}</pre>/*/}
+      </div>
+    )
+  }
+}
+
+ReactDOM.render(
+  <App />,
+  document.getElementById("app")
+)
+    </script>
+
+  </head>
+  <body>
+    <link rel="stylesheet" href="style.css">
+     <div id="app">
+
+</div>
+
+  </body>
+</html>

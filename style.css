@@ -1,0 +1,341 @@
+@import url("https://fonts.googleapis.com/css?family=Raleway");
+html{
+   height: 100%;
+}
+body {
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#202190+0,5f2f92+50,ba3d9c+100 */
+background: #202190; /* Old browsers */
+background: -moz-linear-gradient(top, #202190 0%, #5f2f92 50%, #ba3d9c 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top, #202190 0%,#5f2f92 50%,#ba3d9c 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom, #202190 0%,#5f2f92 50%,#ba3d9c 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#202190', endColorstr='#ba3d9c',GradientType=0 ); /* IE6-9 */
+  font-family: 'Raleway', sans-serif;
+  margin: 0;
+  padding: 0;
+
+}
+button:focus{
+  outline: none;
+}
+
+#board {
+  width: 600px;
+  height: 600px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+  margin: 0 auto;
+  margin-top: 30px;
+  transform: perspective(50em) rotateX(20deg);
+      border-radius: 1em;
+    overflow: hidden;
+    box-shadow: 0 8px 4px rgba(0,0,0,0.5)
+}
+
+.btn {
+  box-sizing: border-box;
+  border: 2px solid #241c1c;
+  width: 200px;
+  height: 200px;
+  background: #FFFFFF;
+  cursor: pointer;
+  text-align: center;
+  font-size: 5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #241c1c;
+}
+.gray-btn{
+  background: #E0E1FF;
+}
+.btn:hover {
+  background: rgba(255,255,255,0.9);
+}
+
+#winnerMessage {
+  border-radius: 1em;
+  position: absolute;
+  background: #fff;
+  border: 2px solid #fff;
+  top: 75px;
+  left: 50%;
+  padding: 2%;
+  width: 500px;
+  height: 500px;
+  box-sizing: border-box;
+  margin-left: -250px;
+  text-align: center;
+  color: #ec4a89;
+  transform: perspective(50em) rotateX(20deg);
+  box-shadow: 0 4px 4px rgba(100,100,100,0.7);
+
+}
+
+#winnerMessage h2{
+  font-size: 3em;
+}
+#winnerMessage h4{
+  font-size: 2em;
+}
+#winnerMessage h3{
+  font-size: 1.4em;
+}
+.no-border-top {
+  border-top: none;
+}
+
+.no-border-bottom {
+  border-bottom: none;
+}
+
+.no-border-left {
+  border-left: none;
+}
+
+.no-border-right {
+  border-right: none;
+}
+.no-border-top.no-border-left.round{
+  border-radius: 10px 0 0 0;
+}
+
+.no-border-bottom.no-border-left.round {
+  border-radius: 0 0 0 10px;
+}
+
+.no-border-top.no-border-right.round{
+  border-radius: 0 10px 0 0;
+}
+
+.no-border-bottom.no-border-right.round {
+  border-radius: 0 0 10px 0;
+}
+
+
+
+
+#score-board {
+    position: relative;
+   
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    background-color: #151771;
+        padding: 0 0 20px 0;
+}
+
+#playerone-score,
+#playertwo-score {
+  width: 250px;
+  text-align: center;
+}
+
+.box {
+  width: 100px;
+  height: 100px;
+  background-color: #3498db;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.player-select {
+  display: block;
+  margin: 20px auto;
+  padding: 5%;
+  background: #fff;
+  color: #ec4a89;
+  font-family: 'Raleway', sans-serif;
+  cursor: pointer;
+  width: 400px;
+  font-weight: 900; 
+}
+
+
+.reset-btn, .start-btn{
+ background-color: #FE3FA7;
+    padding: 1% 5%;
+    color: #fff;
+    text-transform: uppercase;
+    border: 0;
+    font-size: 2em;
+    border-radius: .5em;
+   display: -webkit-flex;
+   display: -moz-flex;
+   display: -ms-flex;
+   display: -o-flex;
+   display: flex;
+    justify-content: center;
+    box-shadow: 0px 3px 20px rgba(0,0,0,0.4) ;
+   font-family: 'Raleway', sans-serif;
+   font-weight: 900; 
+  cursor: pointer;
+  margin:  5% auto 0;
+
+}
+.start-btn {
+  padding: 3% 9%;
+  background: #FFC21C;
+  box-shadow: 0px 3px 8px rgba(0,0,0,0.4) ;
+}
+.X, .O{
+      font-size: 2em;
+    font-weight: 900;    
+    text-shadow: 1px 1px 0 rgba(140,140,140,0.6) , -1px -1px 1px rgba(0,0,0,0.67) ;
+}
+ .X{
+  color:#FE3EAB;
+}
+.O{
+  color: #59DEFF;
+}
+
+.blue, .red{
+  padding: 2% 5%;
+   margin: 5% auto;
+    font-size: 2em;
+    border-radius: .5em;
+   display: -webkit-flex;
+   display: -moz-flex;
+   display: -ms-flex;
+   display: -o-flex;
+   display: flex;
+    justify-content: center;
+   font-weight: 900;
+   font-family: 'Raleway', sans-serif;
+  cursor: pointer;
+}
+ .blue{
+  background: #FE3EAB;
+  color:white;
+
+ }
+ .red{
+  background:  #59DEFF;
+  color:white;
+
+ }
+
+.bold {
+  font-size: 32px;
+}
+
+.fade-enter {
+  opacity: 0;
+  transform: translateX(-200%);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 700ms ease-out;
+  animation: slide-in 700ms ease-out forwards;
+
+}
+
+.fade-leave {
+  opacity: 1;
+  transform: translateX(0%);
+}
+
+.fade-leave-active {
+  opacity: 0;
+  transition: opacity 700ms ease-out;
+  animation: slide-out 700ms ease-out forwards;
+}
+
+.fade-appear {
+  opacity: 0;
+  transform: translateX(-200%);
+}
+
+.fade-appear-active {
+  opacity: 1;
+  transition: opacity 700ms ease-out;
+  animation: slide-in 700ms ease-out forwards;
+}
+
+@-moz-keyframes slide-in {
+  from {
+    transform: translateX(-200%);
+  }
+
+  to {
+    transform: translateX(0%) perspective(50em) rotateX(20deg);
+  }
+}
+
+@-webkit-keyframes slide-in {
+  from {
+    transform: translateX(-200%);
+  }
+
+  to {
+    transform: translateX(0%) perspective(50em) rotateX(20deg);
+  }
+}
+
+@-o-keyframes slide-in {
+  from {
+    transform: translateX(-200%);
+  }
+
+  to {
+    transform: translateX(0%) perspective(50em) rotateX(20deg);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(-200%);
+  }
+
+  to {
+    transform: translateX(0%) perspective(50em) rotateX(20deg);
+  }
+}
+
+@-moz-keyframes slide-out {
+  from {
+    transform: translateX(0%);
+  }
+
+  to {
+    transform: translateX(200%) perspective(40em) rotateX(-10deg);
+  }
+}
+
+@-webkit-keyframes slide-out {
+  from {
+    transform: translateX(0%);
+  }
+
+  to {
+    transform: translateX(200%) perspective(40em) rotateX(-10deg);
+  }
+}
+
+@-o-keyframes slide-out {
+  from {
+    transform: translateX(0%);
+  }
+
+  to {
+    transform: translateX(200%) perspective(40em) rotateX(-10deg);
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translateX(0%);
+  }
+
+  to {
+    transform: translateX(200%) perspective(40em) rotateX(-10deg);
+  }
+}
